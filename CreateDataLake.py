@@ -78,8 +78,6 @@ tedx_dataset_final = tedx_dataset_agg.join(watch_next_dataset_agg, tedx_dataset_
     
 print("tedx_dataset_final ready!\n\n")
 
-tags_dataset_final = tags_dataset.groupBy(col("tag")).agg(collect_list("idx").alias("idxs"))
-
 mongo_uri = "mongodb://cluster0-shard-00-00.a9mo1.mongodb.net:27017,cluster0-shard-00-01.a9mo1.mongodb.net:27017,cluster0-shard-00-02.a9mo1.mongodb.net:27017"
 mongo_url = "https://cloud.mongodb.com/v2/605c4969fbda5e38d3bc5531#metrics/replicaSet/609677258979dd2966e7bf8f/explorer/unibg_tedx_2021/tedx_data/find"
 
@@ -93,12 +91,6 @@ write_mongo_options = {
     "ssl.domain_match": "false"}
 from awsglue.dynamicframe import DynamicFrame
 tedx_dataset_dynamic_frame = DynamicFrame.fromDF(tedx_dataset_final, glueContext, "nested")
-
-glueContext.write_dynamic_frame.from_options(tedx_dataset_dynamic_frame, connection_type="mongodb", connection_options=write_mongo_options)
-
-write_mongo_options["collection"] = "tedx_tag_data"
-
-tedx_dataset_dynamic_frame = DynamicFrame.fromDF(tags_dataset_final, glueContext, "nested")
 
 glueContext.write_dynamic_frame.from_options(tedx_dataset_dynamic_frame, connection_type="mongodb", connection_options=write_mongo_options)
 
